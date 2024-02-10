@@ -4,12 +4,16 @@ import 'package:google_fonts/google_fonts.dart';
 class checkBoxList extends StatefulWidget {
   final headerText;
   final subtext;
+  final int index; // Add an index to identify the checkbox
+  final Function(int, bool) onCheckboxChanged;
 
 
   checkBoxList({
     super.key,
     required this.headerText,
     required this.subtext,
+    required this.index, // Pass index in constructor
+    required this.onCheckboxChanged,
     });
 
   @override
@@ -36,6 +40,7 @@ class _checkBoxListState extends State<checkBoxList> {
           setState(() {
             _isChecked = newValue;
           });
+          widget.onCheckboxChanged(widget.index, newValue!);
         },
         activeColor: Colors.indigo,
         checkColor: Colors.white,
