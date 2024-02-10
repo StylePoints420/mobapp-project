@@ -1,7 +1,6 @@
 <?php
 include '../connection.php';
 
-
 $adminUsername = $_POST['username'];
 $adminPassword = md5($_POST['password']);
 
@@ -11,14 +10,12 @@ $sqlQuery->execute();
 $result = $sqlQuery->get_result();
 
 if ($result->num_rows > 0) {
-    echo json_encode(array("accountFound"=>true));
+    $user = $result->fetch_assoc();
+    echo json_encode(array("accountFound"=>true, "username" => $user['username'])); // Include username in response
 } else {
     echo json_encode(array("accountFound"=>false));
 }
 
 $sqlQuery->close();
 $dbConn->close();
-
-
-
 ?>

@@ -8,8 +8,8 @@ $productBrand = $_POST['product_brand'];
 $productQuantity = $_POST['product_quantity'];
 $productPrice = $_POST['product_price'];
 
-$sqlQuery = $dbConn->prepare("UPDATE products_tbl SET product_name = ?, product_category = ?, product_brand = ?, product_quantity = ?, product_price = ? WHERE product_id = ?");
-$sqlQuery->bind_param("ssssss", $productName, $productCategory, $productBrand, $productQuantity, $productPrice, $productID);
+$sqlQuery = $dbConn->prepare("DELETE FROM products_tbl WHERE product_id = ?");
+$sqlQuery->bind_param("s", $productID);
 $sqlQuery->execute();
 
 // Check if any rows were updated
