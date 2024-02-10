@@ -1,15 +1,38 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:inventorysystem/loginPage.dart';
 import 'readItems.dart';
 import 'createItems.dart';
 import 'updateItems.dart';
 import 'package:inventorysystem/widgets/drawerList.dart';
 import 'package:inventorysystem/widgets/dashboard_functions.dart';
 import 'package:lottie/lottie.dart';
+import 'changeItems.dart';
+import 'deleteItem.dart';
+import 'package:inventorysystem/api_conn/api_connection.dart';
+import 'package:http/http.dart' as http;
 
 
 class homepage extends StatelessWidget {
-  const homepage({Key? key}) : super(key: key); // Corrected constructor
+  final String username;
+   const homepage({Key? key, required this.username}) : super(key: key); // Modify constructor
+   
+    Future<int> fetchProductCount() async {
+    final response = await http.get(Uri.parse(API.readProduct));
+    if (response.statusCode == 200) {
+      final result = json.decode(response.body);
+      if (result['fetchedProducts'] == true) {
+        List<dynamic> products = result['products'];
+        return products.length; // Return the count of products
+      } else {
+        return 0; // Return 0 if no products are fetched
+      }
+    } else {
+      throw Exception('Failed to load products');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,17 +81,17 @@ class homepage extends StatelessWidget {
                     drawerText: "Update Item",
                     onTap: () => {
                       Navigator.of(context).push (
-                      MaterialPageRoute(builder: (context) => updateProduct())
+                      MaterialPageRoute(builder: (context) => changeProductVal())
                       )
                     }
                     ),
-                       drawerComponents(
+                    drawerComponents(
                     icon: Icons.delete,
                     drawerText: "Delete Item",
                     onTap: () => {
-                      // Navigator.of(context).push (
-                      // MaterialPageRoute(builder: (context) => viewItem())
-                      // )
+                      Navigator.of(context).push (
+                      MaterialPageRoute(builder: (context) => deleteProductVal())
+                      )
                     }
                     ),
                   Center(
@@ -114,17 +137,22 @@ class homepage extends StatelessWidget {
                             );
                           }
                         ),
-                        Container(
-                          margin: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-                          decoration: BoxDecoration(
-                            color: Colors.blue[600],
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: const EdgeInsets.all(10),
-                          child: const Icon(
-                            Icons.logout,
-                            color: Colors.white,
-                            size: 30,
+                        GestureDetector(
+                          onTap:() {
+                             Navigator.push(context, MaterialPageRoute(builder: (context) => loginPage()));
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+                            decoration: BoxDecoration(
+                              color: Colors.blue[600],
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.all(10),
+                            child: const Icon(
+                              Icons.logout,
+                              color: Colors.white,
+                              size: 30,
+                            ),
                           ),
                         ),
                       ],
@@ -138,7 +166,7 @@ class homepage extends StatelessWidget {
                     ),
                     child: Column(children: [
                       Text(
-                        'Hello, AYO',
+                        'Hello, $username',
                         style: GoogleFonts.libreBaskerville(
                           fontSize: 40,
                           color: Colors.grey[100],
@@ -182,34 +210,48 @@ class homepage extends StatelessWidget {
                     ),
                   //  LIST OF FUNCTIONS
                   Expanded(
-                    child: ListView(
-                      children: [
-                        dashboardDivs(
-                          icon: Icons.create,
-                          functionName: "Current stocks:",
-                          functionSubtext: "15 items",
-                        ),
-                        const SizedBox(height: 25),
-                        dashboardDivs(
-                          icon: Icons.pageview,
-                          functionName: "View Items",
-                          functionSubtext: "15 items newly created",
-                        ),
-                        const SizedBox(height: 25),
-                        dashboardDivs(
-                          icon: Icons.system_update,
-                          functionName: "Update Items",
-                          functionSubtext: "15 items newly created",
-                        ),
-                        const SizedBox(height: 25),
-                        dashboardDivs(
-                          icon: Icons.delete,
-                          functionName: "Delete Items",
-                          functionSubtext: "15 items newly created",
-                        ),
-                      ],
-                    ),
-                  )
+                      child: FutureBuilder<int>(
+                        future: fetchProductCount(), // Use the future to fetch product count
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            // Show loading indicator while waiting
+                            return Center(child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            // Show error if any
+                            return Center(child: Text('Error: ${snapshot.error}'));
+                          } else {
+                            // Once data is fetched, display the updated dashboardDivs with product count
+                            return ListView(
+                              children: [
+                                dashboardDivs(
+                                  icon: Icons.create,
+                                  functionName: "Current stocks:",
+                                  functionSubtext: "${snapshot.data} items", // Display fetched product count
+                                ),
+                                const SizedBox(height: 25),
+                                dashboardDivs(
+                                  icon: Icons.pageview,
+                                  functionName: "View Items",
+                                  functionSubtext: "${snapshot.data} items can be viewed", // Placeholder text, adjust as needed
+                                ),
+                                const SizedBox(height: 25),
+                                dashboardDivs(
+                                  icon: Icons.system_update,
+                                  functionName: "Update Items",
+                                  functionSubtext: "${snapshot.data} items recently updated", // Placeholder text, adjust as needed
+                                ),
+                                const SizedBox(height: 25),
+                                dashboardDivs(
+                                  icon: Icons.delete,
+                                  functionName: "Delete Items",
+                                  functionSubtext: "${snapshot.data} items available for deletion", // Placeholder text, adjust as needed
+                                ),
+                              ],
+                            );
+                          }
+                        },
+                      ),
+                    )
                   ],
                 ),
               ),

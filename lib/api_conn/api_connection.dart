@@ -17,6 +17,7 @@ class API {
   static const createProduct = "$host/products/create_product.php";
   static const readProduct = "$host/products/read_product.php";
   static const updateProduct = "$host/products/update_product.php";
+  static const deleteProduct = "$host/products/delete_product.php";
 
 
 }

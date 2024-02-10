@@ -24,7 +24,8 @@ class loginPage extends StatelessWidget {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
 
-  Future<bool> validateAdminAccount() async {
+  Future<Map<String, dynamic>> validateAdminAccount() async {
+  Map<String, dynamic> responseMap = {"accountFound": false, "username": ""};
   try {
     var res = await http.post(
       Uri.parse(API.adminLogin),
@@ -33,40 +34,43 @@ class loginPage extends StatelessWidget {
         'password': passwordController.text.trim(),
       }
     );
-    if(res.statusCode == 200) {
-      var resBodyOfLogin = jsonDecode(res.body);
-      return resBodyOfLogin['accountFound'];
+    if (res.statusCode == 200) {
+      var resBody = jsonDecode(res.body);
+      responseMap["accountFound"] = resBody['accountFound'];
+      if (resBody['accountFound']) {
+        responseMap["username"] = resBody['username'];
+      }
     } else {
       Fluttertoast.showToast(msg: "Error! Try again!");
-      return false;
     }
-  } catch(e) {
+  } catch (e) {
     print("Error occurred! ${e}");
-    return false;
   }
+  return responseMap;
 }
 
 
-     void adminLogin(BuildContext context) async {
-      bool accountFound = await validateAdminAccount();
-      if(usernameController.text.length <= 0 || passwordController.text.length <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Don't leave any textfields blank!")),
-      );
-      return;
-      }
-      else if(accountFound) {
-        Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => homepage()), // Make sure you have a HomePage widget
-      );
-    }
-    else {
-      ScaffoldMessenger.of(context).showSnackBar(
+
+  void adminLogin(BuildContext context) async {
+  var loginResponse = await validateAdminAccount();
+  if (usernameController.text.isNotEmpty && passwordController.text.isNotEmpty && loginResponse['accountFound']) {
+    if (loginResponse['accountFound'] && loginResponse['username'] != null) {
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => homepage(username: loginResponse['username'])),
+  );
+} else {
+   ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("No account found. Try again!")),
     );
-    }
-   }
+}
+
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("No account found. Try again!")),
+    );
+  }
+}
 
 
    void adminSignup(BuildContext context) {

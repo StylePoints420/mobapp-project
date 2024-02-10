@@ -8,9 +8,10 @@ import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:inventorysystem/api_conn/api_connection.dart';
 import 'readItems.dart';
+import 'package:lottie/lottie.dart';
 
 
-class changeProductVal extends StatelessWidget {
+class deleteProductVal extends StatelessWidget {
   final productIDController = TextEditingController();
   final productNameController = TextEditingController();
   final productCategoryController = TextEditingController();
@@ -18,15 +19,15 @@ class changeProductVal extends StatelessWidget {
   final productQuantityController = TextEditingController();
   final productPriceController = TextEditingController();
 
-  changeProductVal({
+  deleteProductVal({
     Key? key,
   }) : super(key: key);
 
 
-  Future<bool> updateProductDetails() async {
+  Future<bool> deleteProductDetails() async {
     try {
       var res = await http.post(
-      Uri.parse(API.updateProduct),
+      Uri.parse(API.deleteProduct),
       body: {
         'product_id': productIDController.text.trim(),
         'product_name': productNameController.text.trim(),
@@ -50,9 +51,9 @@ class changeProductVal extends StatelessWidget {
     }
    }
 
-  void changeProductDetails(BuildContext context) async {
-    bool updatedProduct = await updateProductDetails();
-    if (updatedProduct) {
+  void removeProductDetails(BuildContext context) async {
+    bool deletedProduct = await deleteProductDetails();
+    if (deletedProduct) {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => viewItem()));
     }
     else {
@@ -68,7 +69,7 @@ class changeProductVal extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.indigo,
         iconTheme: IconThemeData(color: Colors.white),
-        title: Text("Update Products", style: GoogleFonts.manrope(fontSize: 20, color: Colors.white)),
+        title: Text("Delete Products", style: GoogleFonts.manrope(fontSize: 20, color: Colors.white)),
         centerTitle: true,
       ),
       body:SingleChildScrollView(
@@ -76,7 +77,7 @@ class changeProductVal extends StatelessWidget {
           children: [
              const SizedBox(height: 10),
               Text(
-              'Update Product Details',
+              'Delete Products',
                       style: GoogleFonts.bebasNeue(
                         fontSize: 45,
                         fontWeight: FontWeight.w900
@@ -96,59 +97,19 @@ class changeProductVal extends StatelessWidget {
                 hintText: "Product ID",
                  obscureText: false
                 ),
-               const SizedBox(height: 10),
-               Text(
-                "Enter the details below:",
-                 style: GoogleFonts.montserrat(
-                fontSize: 24,
-                  fontWeight: FontWeight.w400
+              const SizedBox(height: 20),
+              Container(
+                child: Lottie.network(
+                  'https://lottie.host/123056cc-ad4e-41fd-aeab-acbb05372d26/mUcj0HLeku.json'
                 ),
               ),
-              const SizedBox(height: 20),
               // LIST OF TEXT FIELDS
-              textFieldFormat(
-                controller:
-                productNameController,
-              hintText: "Enter Product Name",
-              obscureText: false
-              ),
-              const SizedBox(height: 20),
-              // LIST OF TEXT FIELDS
-              textFieldFormat(
-                controller:
-                productCategoryController,
-              hintText: "Enter Product Category",
-              obscureText: false
-              ),
-              const SizedBox(height: 20),
-              // LIST OF TEXT FIELDS
-              textFieldFormat(
-                controller:
-                productBrandController,
-              hintText: "Enter Product Brand",
-              obscureText: false
-              ),
-              const SizedBox(height: 20),
-              // LIST OF TEXT FIELDS
-              textFieldFormat(
-                controller:
-                productQuantityController,
-              hintText: "Enter Product Quantity",
-              obscureText: false
-              ),
-              const SizedBox(height: 20),
-              // LIST OF TEXT FIELDS
-              textFieldFormat(
-                controller:productPriceController,
-              hintText: "Enter Product Price",
-              obscureText: false
-              ),
-
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
             myButtons(onTap: () {
-              changeProductDetails(context);
+              removeProductDetails(context);
             },
-            text: "Update product",
+            
+            text: "Delete product",
             color: Colors.indigo
             )
           ],
