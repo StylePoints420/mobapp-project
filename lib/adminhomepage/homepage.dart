@@ -232,19 +232,19 @@ class homepage extends StatelessWidget {
                                 dashboardDivs(
                                   icon: Icons.pageview,
                                   functionName: "View Items",
-                                  functionSubtext: "${snapshot.data} items can be viewed", // Placeholder text, adjust as needed
+                                  functionSubtext: "${snapshot.data} items can be viewed",
                                 ),
                                 const SizedBox(height: 25),
                                 dashboardDivs(
                                   icon: Icons.system_update,
                                   functionName: "Update Items",
-                                  functionSubtext: "${snapshot.data} items recently updated", // Placeholder text, adjust as needed
+                                  functionSubtext: "${snapshot.data} items recently updated", 
                                 ),
                                 const SizedBox(height: 25),
                                 dashboardDivs(
                                   icon: Icons.delete,
                                   functionName: "Delete Items",
-                                  functionSubtext: "${snapshot.data} items available for deletion", // Placeholder text, adjust as needed
+                                  functionSubtext: "${snapshot.data} items available for deletion",
                                 ),
                               ],
                             );
